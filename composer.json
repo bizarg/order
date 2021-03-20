@@ -1,0 +1,22 @@
+{
+    "name": "bizarg/order",
+    "description": "order",
+    "version": "1.0",
+    "minimum-stability": "dev",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Aleksandr",
+            "email": "aleksandr.chyzhevskiy@it-devgroup.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Bizarg\\Order\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.1",
+        "illuminate/request": "^6.0|^7.0|^8.0"
+    }
+}
