@@ -1,7 +1,7 @@
 {
     "name": "bizarg/order",
     "description": "order",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "minimum-stability": "dev",
     "license": "MIT",
     "authors": [
@@ -17,6 +17,6 @@
     },
     "require": {
         "php": ">=7.1",
-        "illuminate/request": "*"
+        "illuminate/http": "*"
     }
 }
