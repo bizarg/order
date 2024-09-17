@@ -41,7 +41,7 @@ class Order
         string $defaultSortField = self::SORT_FIELD,
         string $direction = self::SORT_ASC,
         string $sortParam = 'sort'
-    ): self {
+    ): static {
         $param = $request->get($sortParam);
 
         if (substr($param, 0, 1) == '-') {
