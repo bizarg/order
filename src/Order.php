@@ -44,7 +44,7 @@ class Order
     ): static {
         $param = $request->get($sortParam);
 
-        if (substr($param, 0, 1) == '-') {
+        if (substr($param ?? '', 0, 1) == '-') {
             $direction = self::SORT_DESC;
             $param = ltrim($param, '-');
         }
