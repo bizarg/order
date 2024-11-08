@@ -10,28 +10,29 @@ class Order
     public const SORT_DESC = 'desc';
     public const SORT_FIELD = 'createdAt';
 
-    private ?string $field = null;
-    private ?string $direction = null;
+    private array $fields = [];
+    private array $directions = [];
+    private array $cases = [];
 
-    public function field(): ?string
+    public function fields(): array
     {
-        return $this->field;
+        return $this->fields;
     }
 
-    public function setField(?string $field): static
+    public function setFields(array $fields): static
     {
-        $this->field = $field;
+        $this->fields = $fields;
         return $this;
     }
 
-    public function direction(): ?string
+    public function directions(): array
     {
-        return $this->direction;
+        return $this->directions;
     }
 
-    public function setDirection(?string $direction): static
+    public function setDirections(array $directions): static
     {
-        $this->direction = $direction;
+        $this->directions = $directions;
         return $this;
     }
 
@@ -39,22 +40,51 @@ class Order
         Request $request,
         array $allowedFields,
         string $defaultSortField = self::SORT_FIELD,
-        string $direction = self::SORT_ASC,
+        string $defaultDirection = self::SORT_ASC,
         string $sortParam = 'sort'
     ): static {
-        $param = $request->get($sortParam);
+        $sortParams = explode(',', $request->get($sortParam, ''));
 
-        if (substr($param ?? '', 0, 1) == '-') {
-            $direction = self::SORT_DESC;
-            $param = ltrim($param, '-');
+        $fields = [];
+        $directions = [];
+
+        foreach ($sortParams as $param) {
+            $direction = $defaultDirection;
+            if (substr($param, 0, 1) === '-') {
+                $direction = self::SORT_DESC;
+                $param = ltrim($param, '-');
+            }
+
+            $sortField = !in_array($param, array_keys($allowedFields))
+                ? $allowedFields[$defaultSortField] ?? 'id'
+                : $allowedFields[$param];
+
+            $fields[] = $sortField;
+            $directions[] = $direction;
         }
 
-        $sortField = !in_array($param, array_keys($allowedFields))
-            ? $allowedFields[$defaultSortField] ?? 'created_at'
-            : $allowedFields[$param];
+        $static = (new static())
+            ->setFields($fields)
+            ->setDirections($directions);
 
-        return (new static())
-            ->setField($sortField)
-            ->setDirection($direction);
+        foreach ($request->input('sortCases') ?? [] as $key => $value) {
+            $static->setCases($value, $allowedFields, $key);
+        }
+
+        return $static;
+    }
+
+    public function setCases(array $values, array $allowedFields, string $field = 'id'): static
+    {
+        if (in_array($field, array_keys($allowedFields))) {
+            $this->cases[$field] = $values;
+        }
+
+        return $this;
+    }
+
+    public function getCases(): array
+    {
+        return $this->cases;
     }
 }
